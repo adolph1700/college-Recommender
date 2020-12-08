@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <!-- BootStrap -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Jquery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Google Charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- JS -->
+    <script>
+
+
+    </script>
+  </head>
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-light fixed-top"
+      style="
+        border-bottom: 1px solid rgba(34, 34, 34, 0.05);
+        background-color: #fff;
+        box-shadow: 1px 1px 2px 1px grey;
+      "
+    >
+      <a class="navbar-brand" href="/"
+        ><img
+          src="https://www.careerindia.com/img/400x100/2012/05/18-vjtimumbai.jpg"
+          class="d-inline-block align-top"
+          height="55"
+          width="60"
+        /><span style="font-size: 2rem; color: grey; margin-left: 2%;">
+          Grievance Portal</span
+        ></a
+      >
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item" style="margin-right: 35px;">
+            <a class="nav-link" href="#"
+              ><span style="font-size: 1.5rem;"
+                ><%= name %>, <%= collegeID %></span
+              ></a
+            >
+          </li> 
+          <li class="nav-item" style='margin-left:5px;margin-right:15px'>
+         
+          <a
+              class="nav-link"
+              href="/show-profile"
+              id="profile"
+              role="button"
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
+                alt="Profile"
+                height="30"
+                width="30"
+              />
+            </a>
+            <span>Profile</span>
+        </li>
+         
+          <li
+            class="nav-item"
+            style="margin-left: 5px; margin-right: 5px;"
+          >
+          <button class="btn btn-dark"  style='margin-top:5px' onclick="location.assign('/')">
+            Log Out
+           </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+    <div  class ="main"style="
+    overflow: auto;
+     margin: 2% 2% 2% 2%;
+     border: 1px solid grey;
+     padding: 2%;
+     box-shadow: 1px 1px 2px 1px grey;
+     border-radius: 20px;
+   " >
+ <div style="padding: 1%;">
+     <h4 style="margin-bottom: 25px;">Personal Details:-</h4>
+    <div class="row" style=>
+        <div class="col-sm" style="margin-bottom: 5px;"><h5>First Name: <%=data[0].fname %></h5>   </div>
+        <div class="col-sm" style="margin-bottom: 5px;"><h5>Last Name: <%=data[0].lname %></h5>   </div>
+    </div>  
+    <div class="row" >
+        <div class="col-sm" style="margin-bottom: 5px;"><h5>Email: <%=data[0].email %></h5>   </div>
+        <div class="col-sm" style="margin-bottom: 5px;"><h5>Phone: <%=data[0].phone %></h5>   </div>
+        
+    </div>
+    <div class="row" >
+        <div class="col-sm"><h5>DOB: <%=data[0].DOB.toLocaleDateString() %></h5>   </div>
+        <div class="col-sm"><h5>Gender: <%=data[0].gender %></h5>   </div>
+        
+    </div>   
+ </div>
+ <hr> 
+ <div style="padding: 1%;">
+    <h4  style="margin-bottom: 25px;">College Details:-</h4>
+   <div class="row" style=>
+       <div class="col-sm" style="margin-bottom: 5px;"><h5>Email ID: <%=data[0]._id %></h5>   </div>
+<!--        <div class="col-sm" style="margin-bottom: 5px;"><h5>Semester: <%=data[0].semester %></h5>   </div>
+       <div class="col-sm" style="margin-bottom: 5px;"><h5>Year: <%=data[0].year %></h5>   </div> -->
+   </div>  
+   <div class="row" >
+      
+<!--        <div class="col-sm" style="margin-bottom: 5px;"><h5>Program: <%=data[0].program %></h5>   </div>
+       <div class="col-sm" style="margin-bottom: 5px;"><h5>Department: <%=data[0].department %></h5>   </div> -->
+       <div class="col-sm" style="margin-bottom: 5px;"><h5></h5>   </div>
+
+   </div>
+   
+   
+</div>
+
+
+</div>
+      
+    
+  </body>
+</html>
