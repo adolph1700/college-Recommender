@@ -15,27 +15,6 @@ var lnamedoc;
 var password;
 var repassword;
 const { Client } =require('pg');
-client = new Client({
-  user: "user",
-  host: "localhost",
-  password: "password",
-  database : 'postgres',
-  port: 5432
-});
-client.connect();
-const query = `
-CREATE TABLE IF NOT EXISTS location (
-      geolocation point
-);
-`;
-client.query(query, (err, res) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
-    console.log('Table is successfully created');
-    // client.end(); 
-});
 const RegisterSchema = {
     _id: {
         type: String,
