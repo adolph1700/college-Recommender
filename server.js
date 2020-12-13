@@ -14,25 +14,6 @@ var fnamedoc;
 var lnamedoc;
 var password;
 var repassword;
-//Date Formatting
-// function formatDate() {
-//     var date = new Date();
-//     var month_names = ["Jan", "Feb", "Mar",
-//         "Apr", "May", "Jun",
-//         "Jul", "Aug", "Sep",
-//         "Oct", "Nov", "Dec"];
-//     var month_digit = ["01", "02", "03",
-//         "04", "05", "06",
-//         "07", "08", "09",
-//         "10", "11", "12"];
-
-
-//     var day = date.getDate();
-//     var month_index = date.getMonth();
-//     var year = date.getFullYear();
-
-//     return "" + day + "-" + month_digit[month_index] + "-" + year;
-// }
 const { Client } =require('pg');
 client = new Client({
   user: "user",
@@ -55,62 +36,6 @@ client.query(query, (err, res) => {
     console.log('Table is successfully created');
     // client.end(); 
 });
-
-// app.get('/', function (req, res) {
-//     res.sendFile(__dirname + "/index.html");
-// });
-// app.get('/asd', function (req, res) {
-//   console.log("hi")
-//     res.send("hi");
-// });
-// app.get('/map', function (req, res) {
-//     res.sendFile(__dirname + "/map.html");
-// });
-app.get('/latlon', function (req, res) {
-  arr=[[19.0222,72.8561],[18.5294,73.8565],[21.1232,79.0515]]
-    res.send(arr);
-});
-
-app.post('/getlatlon', (req, res) => {
-  console.log(req.body.coords.latitude,req.body.coords.longitude);
-    const query1= `
-    INSERT INTO location (geolocation)
-    VALUES (point(${req.body.coords.latitude},${req.body.coords.longitude}))
-    `;
-    client.query(query1, (err, res) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        console.log('Data insert successful');
-    });
-    print()
-  res.json({ ok: true });
-
-});
-
-
-function print(){
-    const query2 = `
-    SELECT *
-    FROM location
-    `;
-
-    client.query(query2, (err, res) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        for (let row of res.rows) {
-            console.log(row);
-        }
-        // client.end(); 
-    });
-}
-
-
-mongoose.connect('mongodb://localhost:27017/GrievanceDB', { useNewUrlParser: true, useUnifiedTopology: true });
-//Schema for Student Data
 const RegisterSchema = {
     _id: {
         type: String,
@@ -137,20 +62,16 @@ const RegisterSchema = {
 };
 
 //Schema for Complaint 
-const ComplaintSchema = {
-    dateIssued: { type: Date, require: true },
-    location: { type: String, require: true },
-    section: { type: String, require: true },
-    description: { type: String, require: true },
-    dateResolved: { type: Date, require: true },
-    isSolved: { type: Boolean, require: true },
-    adminFeedBack: { type: String, require: true },
-    studentID: { type: String, require: true },
-    inProgress: { type: Boolean, require: true },
+const locationSchema = {
+
+  Name: { type: String, require :true  },
+  Lat : {type:Number},
+  Long :{type: Number}
 
 }
-const collegeSchema = {
 
+const collegeSchema = {
+    _id : {type:Number},
   Name: { type: String, require :true  },
 
   Fees:    { type: String},
@@ -162,6 +83,25 @@ const collegeSchema = {
   Exam: { type: String }
 
 }
+const loginSchema = {
+
+  email: { type: String, require: true },
+  password: { type: String, require: true },
+  Lat : {type:Number},
+  Long :{type: Number}
+
+}
+const courseSchema = {
+
+  Name: { type: String, require :true  },
+  college : {type : String },
+  Rankop : {type:Number},
+  Rankcl :{type: Number}
+
+}
+const courseModel = mongoose.model('course', courseSchema);
+
+const ComplaintSchema={}
 const collegeModel = mongoose.model('colleges',collegeSchema);
 
 //StudentModel
@@ -169,6 +109,148 @@ const registerModel = mongoose.model('student', RegisterSchema);
 //ComplaintModel
 const complaintModel = mongoose.model('complaint', ComplaintSchema);
 
+const locationModel = mongoose.model('location', locationSchema);
+var user_lat ;
+var user_long ;
+var user_radius=200 ;
+function distance(lat1, lon1, lat2, lon2) {
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p))/2;
+
+  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
+
+
+app.get('/latlong', function (req, res) {
+    locationModel.find({}, function (err, data) {
+        if (err) { console.log(err); }
+        else {    
+            var docs=[]
+            for(i=0;i<367;++i)
+      {
+       if(distance(user_lat,user_long,data[i].Lat,data[i].Long)<user_radius){
+        docs.push(data[i]);
+        }
+      }
+            console.log(docs);
+            res.send([docs,user_lat,user_long,user_radius]);
+        }
+    }
+
+    );
+});
+
+app.get('/latlongradius', function (req, res) {
+    locationModel.find({ location:
+                            { $geoWithin:
+                                 { $centerSphere: [ [user_lat, user_long], user_radius / 6378.1 ] 
+                                 } } } ,
+                  function (err, data) {
+                     if (err) { console.log(err); }
+                      else {
+                        console.log(docs);
+                          res.send(docs);
+                         }
+             }
+             );
+    });
+app.get('/radiusall', function (req, res) {
+        locationModel.find({ location:
+                 { $geoWithin:
+                 { $centerSphere: [ [user_lat, user_long], user_radius / 6378.1 ] } } },
+                  function (err, data) {
+        if (err) { console.log(err); }
+        else {
+
+              console.log(docs);
+
+        var filter={
+            rankcl : {
+                $gte : rank
+            }
+        }
+        courseModel.find(filter, function (err, docs) {
+            if (err) { console.log(err) }
+            else {
+                var i=0
+                var arr=[]
+                for(i=0;i<docs.length;++i)
+                {
+                     courseModel.find({Name : docs[i].Name}, function (err, docs) {
+                            arr.push(docs[0])
+                     });
+                }
+                res.send(arr)
+            }
+        });
+        // });
+
+        }
+    });
+    });
+
+//     );
+app.route('/course-rank')
+     .post(function (req, res) {
+        var filter={
+            Rankcl : {
+                $gte : req.body.rank
+            }
+        }
+        courseModel.find(filter, function (err, docs) {
+            if (err) { console.log(err) }
+            else {
+                var i=0
+                var arr=[]
+                for(i=0;i<docs.length;++i)
+                {
+                     courseModel.find({Name : docs[i].Name}, function (err, docs) {
+                            arr.push(docs[0])
+                     });
+                }
+                res.send(arr)
+            }
+        });
+        });
+app.post('/getlatlon', (req, res) => {
+  console.log(req.body.coords.latitude,req.body.coords.longitude);
+  // global user_lat;
+  // global user_long;
+  user_lat=req.body.coords.latitude
+  user_long =req.body.coords.longitude
+  res.json({ ok: true });
+
+});
+
+
+function print(){
+    const query2 = `
+    SELECT *
+    FROM location
+    `;
+
+    client.query(query2, (err, res) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        for (let row of res.rows) {
+            console.log(row);
+        }
+        // client.end(); 
+    });
+}
+
+
+mongoose.connect('mongodb://localhost:27017/GrievanceDB', { useNewUrlParser: true, useUnifiedTopology: true });
+//Schema for Student Data
 // Home(Login) route
 app.get('/', function (req, res) {
     res.sendFile(__dirname + "/index.html");
@@ -223,10 +305,6 @@ app.post('/sign-up', function (req, res) {
             email: req.body.email,
             phone: req.body.phone,
             DOB: req.body.DOB,
-            // semester: req.body.sem,
-            // year: req.body.year,
-            // program: req.body.program,
-            // department: req.body.department,
             gender : req.body.gender,
             password: req.body.password,
             repassword: req.body.repassword
@@ -271,6 +349,30 @@ app.route('/profile-register')
         });
     });
 //--------------------------------------------ALL COMPLAINTS-----------------------------------------------------------//
+// app.route('/course-rank')
+//      .post(function (req, res) {
+//         var filter={
+//             rankcl : {
+//                 $gte : req.body.rank
+//             }
+//         }
+//         courseModel.find(filter, function (err, docs) {
+//             if (err) { console.log(err) }
+//             else {
+//                 var i=0
+//                 var arr=[]
+//                 for(i=0;i<docs.length;++i)
+//                 {
+//                      courseModel.find({Name : docs[i].Name}, function (err, docs) {
+//                             arr.push(docs[0])
+//                      });
+//                 }
+//                 res.send(arr)
+//             }
+//         });
+//         });
+//     });
+
 
 //Profile Route
 app.get('/profile', function (req, res) {
@@ -287,17 +389,138 @@ app.get('/profile', function (req, res) {
 });
 
 //Profile-Solved Route
-app.get('/profile-solved', function (req, res) {
-    complaintModel.find({ isSolved: true }, function (err, docs) {
-        if (err) { console.log(err) }
+app.get('/profile-mycomplaints-solved', function (req, res) {
+    console.log(req.query.length)
+    console.log(2)
+    console.log(req.query.college)
+    // console.log(isEmpty(a))
+    a=req.query
+    if(isEmpty(a))
+   {
+            arr=[]
+    collegeModel.find({}).exec(function (err,docs){
+        if(err){console.log(err)}
+        else{
+            for(i=0;i<docs.length;++i)
+                {   
+                    // console.log("Veermata Jijabai Technological Institute, Mumbai".slice(0,req.query.college.length)=="Veermata Jijabai Technological Institute")
+                        if( docs[i].Name.indexOf(req.query.college)!==-1)
+                        {   console.log(docs[i])
+                                      courseModel.find({college : docs[i].Name}, function (err, docs) {
+                                // console.log(collegeModel.find().limit(5))
+                                if (err) { console.log(err); }
+                                else {
+                                    // console.log(docs,"sdkasdhkjshk");
+                                    res.render("profilemysolved", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
+
+                                }
+                            });
+                          break;
+                        }
+                }
+            }
+        });
+
+
+        }
+    else
+
+    {
+            courseModel.find({}).limit(50).exec(function (err, docs) {
+        // console.log(collegeModel.find().limit(5))
+        if (err) { console.log(err); }
         else {
-            console.log(docs);
-            res.render("profilesolved", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
+            // console.log(docs,"sdkasdhkjshk");
+            res.render("profilemysolved", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
 
         }
     });
+    }
+
+
 });
 
+app.post('/profile-allColleges', function (req, res) {
+
+    collegeModel.find({}, function (err, docs) {
+        // console.log(collegeModel.find().limit(5))
+        if (err) { console.log(err); }
+        else {
+            // console.log(docs);
+            res.render("profilemy", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
+
+        }
+    }
+
+    );
+
+});
+
+// app.get('/profile-allColleges?', function (req, res) {
+//     console.log(req.query)
+//     console.log(2)
+//     // res.json({ ok: true });
+
+// });
+function isEmpty(obj) {
+  for (var o in obj)
+    if (o) return true;
+  return false;
+}
+app.get('/profile-allColleges', function (req, res) {
+    console.log(req.query.length)
+    console.log(2)
+    a=req.query
+    console.log(isEmpty(a))
+    if(isEmpty(a))
+    {
+    user_radius=parseInt(req.query.radius, 10);
+    user_rank=parseInt(req.query.rank,10)
+        var filter={
+            Rankcl : {
+                $gt : user_rank
+            }
+        }
+        courseModel.find(filter, function (err, docs) {
+            if (err) { console.log(err) }
+            else {
+                var i=0
+                var arr=[]
+                // console.log(docs)
+                for(i=0;i<docs.length;++i)
+                {
+                        arr.push(docs[i].college)
+                }
+
+                console.log(arr)
+                    collegeModel.find({Name : {"$in" : arr }}).sort({"_id":1}).exec(function (err, docs) {
+                    if (err) { console.log(err); }
+                    else {
+                        // console.log(docs);
+            res.render("profilemy", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
+
+                            }
+                        });
+                                    // res.send(arr)
+            }
+        });
+}
+    else
+
+    {
+            collegeModel.find({}).sort({"_id":1}).limit(100).exec( function (err, docs) {
+        // console.log(collegeModel.find().limit(5))
+        if (err) { console.log(err); }
+        else {
+            // console.log(docs);
+            res.render("profilemy", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
+
+        }
+    });
+    }
+
+
+});
 //Sending Json route  (Sorting)    PENDING
 app.route('/complaints-pending/:location/:section/:duration')
     .get(function (req, res) {
@@ -439,15 +662,17 @@ app.route('/complaints-solved/:location/:section/:duration')
 //Profile Mycomplaints Pending
 app.get('/profile-allColleges', function (req, res) {
     collegeModel.find({}, function (err, docs) {
+        // console.log(collegeModel.find().limit(5))
         if (err) { console.log(err); }
         else {
-            console.log(docs);
+            // console.log(docs);
             res.render("profilemy", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
 
         }
     }
 
     );
+
 });
 // app.get('/profile-mycomplaints', function (req, res) {
 //         docs=[{
