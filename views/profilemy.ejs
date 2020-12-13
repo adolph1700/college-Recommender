@@ -28,6 +28,7 @@
     ></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- Jquery -->
@@ -134,7 +135,6 @@
                     </div>
                 </div>
                     
-                </div>
             </div>
         </div>`;
         completeHTML += y;
@@ -238,21 +238,21 @@
     <div class="main">
       <script>
       function link1() {
-        location.assign("/profile-mycomplaints");
+        location.assign("/profile-allColleges");
       }
       function link2(){
           location.assign("/profile-mycomplaints-solved");
       }
       </script>
-      <!-- <div class="row">
+      <div class="row">
         <div class="col-sm" style="padding: 0%;">
-          <button class="tablink2 tabs" id="pending" onclick="link1()">Pending</button>
+          <button class="tablink2 tabs" id="pending" onclick="link1()">Exam Given</button>
         </div>
         <div class="col-sm" style="padding: 0%;">
-          <button class="tablink1 tabs" id="solved" onclick="link2()">Solved</button>
+          <button class="tablink1 tabs" id="solved" onclick="link2()">Exam Not Given</button>
         </div>
-      </div> -->
-      <form action="" style="margin: 1% 3% 1% 3%; padding: 2%;">
+      </div>
+      <!-- <form action="" style="margin: 1% 3% 1% 3%; padding: 2%;">
         <div class="form-row">
           <div class="col-md-1">
             <h5>Filters:</h5>
@@ -291,8 +291,43 @@
             </button>
           </div>
         </div>
-      </form>
+      </form> -->
+      <div id="userinputcard" style="margin: 1% 3% 1% 3%; padding: 2%;">
+        <form class="w3-container w3-card-4 w3-light-grey">
+          <center>
+            <h2>Enter Details</h2>
+          </center>
+          <p>Enter your examination details</p>
 
+          <p>
+          <label>Name of the examination</label>
+          <select class="w3-select" name="option">
+            <option value="" disabled selected>Choose your option</option>
+            <option value="1">MHT-CET</option>
+            <option value="2">JEE</option>
+          </select></p>
+          <p>
+          <label>Rank obtained</label>
+          <input class="w3-input w3-border w3-round-large" name="rank" type="text"></p>
+          <p>
+          <label>Show me colleges from all cities</label>
+          <input class="w3-radio" type="radio" name="okcheck" value="yes">
+          <label>Yes</label>
+          <input class="w3-radio" type="radio" name="okcheck" value="no">
+          <label>No</label>
+          </p>
+          <p>
+            <label>If No, Enter Radius from current location</label>
+            <input class="w3-input w3-border w3-round-large" name="radius" id="radius" type="text"></p>
+          </select>
+          </p>
+          <center>
+            <button onclick="myFunction()" class="w3-round" id="GO">
+              GO
+            </button>
+          </center>
+        </form>
+      </div>
     <div id="list">
         <%complaints.forEach(function (complaint) { %>
         <!-- <div
@@ -315,7 +350,7 @@
           <h5>
             Date Issued:               </h5>
         </div> -->
-        <div class="cardBlk custombody Container">
+        <div class="cardBlk custombody Container" id="cardclg">
          
             <div class="cardContent" style="margin: 0; padding: 0; font-weight: 400; font-size: 1.4rem; line-height: 1.428571429; color: #666666; background-color: #EAE4E2; outline: none;">
                 <div class="content">
@@ -331,13 +366,7 @@
                         <li><%=complaint.Sector%></li>
                         
                     </ul>
-
-                    <div class="course">
-                    
-<!--                     <a href="https://www.careers360.com/colleges/veermata-jijabai-technological-institute-mumbai/btech-civil-engineering-course">B.Tech Civil Engineering</a>
-                     
-                    <span><a href="https://www.careers360.com/colleges/veermata-jijabai-technological-institute-mumbai/courses" class="viewAll">View all Courses</a></span> -->
-                    </div>      
+   
                     <ul class="rank">        
                         <li><strong>Fees: </strong><%=complaint.Fees%></li>
                                  
@@ -351,10 +380,38 @@
                 </div>
             </div>
       </div>
-
         <% });%>
-          </div>
-      <div id="sortedlist"></div>
+<!--       <div id="sortedlist"></div> -->
     </div>
+    <!-- <script type="text/javascript">
+    	$(document).ready(function () {
+	    size_li = $("#cardclg div").length;
+	    console.log(size_li);
+	    x=4;
+	    $('#cardclg div:lt('+x+')').show();
+	    $('#loadMore').click(function () {
+	        x= (x+8 <= size_li) ? x+8 : size_li;
+	        $('#cardclg div:lt('+x+')').show();
+	         $('#showLess').show();
+	        if(x == size_li){
+	            $('#loadMore').hide();
+	        }
+	    });
+	    });
+	    // $(document).ready(function () {
+     //        totalnews = $('#cardclg .cardclgcont').length;
+     //        x = 4;
+     //        $('#cardclg .cardclgcont').slice(0, 4).show();
+     //        $('#loadMore').click(function () {
+     //            alert("ca");
+     //            if (x + 8 >= totalnews) {
+     //                $('#loadMore').hide();
+     //            }
+     //            x = (x + 8 <= totalnews) ? x + 8 : totalnews;
+     //            $('#cardclg .cardclgcont').hide();
+     //            $('#cardclg .cardclgcont').slice(0, x).show();
+     //        });
+     //    });
+    </script> -->
   </body>
 </html>

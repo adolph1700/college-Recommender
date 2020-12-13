@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Complaints</title>
+    <title>All Colleges</title>
     <!-- BootStrap -->
     <link
       rel="stylesheet"
@@ -28,6 +28,7 @@
     ></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <!-- Jquery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- Jquery -->
@@ -104,7 +105,8 @@
                 "</h5>\
                      </div>\
                      ";
-              completeHTML += x;
+
+//         completeHTML += y;
             });
             $("#sortedlist").html(completeHTML);
           });
@@ -143,13 +145,8 @@
       "
     >
       <a class="navbar-brand" href="/"
-        ><img
-          src="https://www.careerindia.com/img/400x100/2012/05/18-vjtimumbai.jpg"
-          class="d-inline-block align-top"
-          height="55"
-          width="60"
-        /><span style="font-size: 2rem; color: grey; margin-left: 2%;">
-          Grievance Portal</span
+        ><div class="imagenavbar d-inline-block align-top" style="width: 60px; height: 55px;"></div><span style="font-size: 2rem; color: grey;">
+          College Recommender</span
         ></a
       >
       <button
@@ -202,15 +199,15 @@
       </div>
     </nav>
     <div class="sidenav">
-      <a href="/profile" class="links">All Complaints</a>
-      <a href="" class="links active">My Complaints</a>
-      <a href="/profile-register" class="links">Register Complaint</a>
-      <a href="/dashboard" class="links">Dashboard</a>
+      <a href="/profile" class="links">My Colleges</a>
+      <a href="/profile-allColleges" class="links active">All Colleges</a>
+      <!-- <a href="/profile-register" class="links">Register Complaint</a> -->
+      <a href="/dashboard" class="links">Map</a>
     </div>
     <div class="main">
         <script>
             function link1() {
-              location.assign("/profile-mycomplaints");
+              location.assign("/profile-allColleges");
             }
             function link2(){
                 location.assign("/profile-mycomplaints-solved");
@@ -218,13 +215,13 @@
             </script>
       <div class="row">
         <div class="col-sm" style="padding: 0%;">
-          <button class="tablink1 tabs" id="pending" onclick="link1()">Pending</button>
+          <button class="tablink1 tabs" id="pending" onclick="link1()">Exam Given</button>
         </div>
         <div class="col-sm" style="padding: 0%;">
-          <button class="tablink2 tabs" id="solved" onclick="link2()">Solved</button>
+          <button class="tablink2 tabs" id="solved" onclick="link2()">Exam Not Given</button>
         </div>
       </div>
-      <form action="" style="margin: 1% 3% 1% 3%; padding: 2%;">
+      <!-- <form action="" style="margin: 1% 3% 1% 3%; padding: 2%;">
         <div class="form-row">
           <div class="col-md-1">
             <h5>Filters:</h5>
@@ -263,39 +260,53 @@
             </button>
           </div>
         </div>
-      </form>
+      </form> -->
+      <div id="userinputcard" style="margin: 1% 3% 1% 3%; padding: 2%;">
+        <form class="w3-container w3-card-4 w3-light-grey">
+          <center>
+            <h2>Enter Details</h2>
+          </center>
+          <p>Enter your preferred details</p>
 
+          <p>
+          <label>Name of the college</label>
+          <input class="w3-input w3-border w3-round-large" name="college" type="text">
+          </p>
+          <p>
+          <label>Enter City</label>
+          <input class="w3-input w3-border w3-round-large" name="city" type="text">
+          </p>
+          
+          <center>
+            <button class="w3-round">
+              GO
+            </button>
+          </center>
+        </form>
+      </div>
       <div id="list">
         <%complaints.forEach(function (complaint) { %>
-        <div
-          id="singlecomplaint"
-          class="Container"
-          style="
-            margin: 1% 3% 1% 3%;
-            border: 1px solid grey;
-            padding: 2%;
-            border-radius: 20px;
-            box-shadow: 1px 1px 2px 1px grey;
-          "
-        >
-          <h5>Location:  <%=complaint.location%></h5>
-          <hr />
-          <h5>Section:  <%=complaint.section%></h5>
-          <hr  />
-          <h5>Complaint:  <%=complaint.description%></h5>
-          <hr  />
-          <h5>
-            Date Issued:  <%=complaint.dateIssued.toLocaleDateString()%>
-          </h>
-          <hr  />
-          <h5>
-            Date Resolved: <%=complaint.dateResolved.toLocaleDateString()%>
-          </h5>
-          <hr  />
-          <h5>
-            Admin Feedback: <%=complaint.adminFeedBack%>
-          </h5>
-        </div>
+        <div class="cardBlk custombody Container" id="cardclg">
+         
+            <div class="cardContent" style="margin: 0; padding: 0; font-weight: 400; font-size: 1.4rem; line-height: 1.428571429; color: #666666; background-color: #EAE4E2; outline: none;">
+                <div class="content">
+                    <h4 class="blockHeading"><a href="./veermata-jijabai-technological-institute-mumbai"><%=complaint.college%></a></h4>
+
+                    <ul class="course"> 
+                        
+                        <li><%=complaint.Name%></li>
+                        
+                    </ul>
+  
+                    <ul class="rank">        
+                        <li><strong>Opening Rank: </strong><%=complaint.Rankop%></li>
+                                 
+                        <li><strong>Closing Rank: </strong> <%=complaint.Rankcl%></li>
+                        
+                    </ul>
+                </div>
+            </div>
+</div>
         <% });%>
       </div>
       <div id="sortedlist"></div>

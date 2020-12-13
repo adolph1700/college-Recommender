@@ -314,33 +314,49 @@ $('#apply').click(function()
                   lon=position.coords.longitude;
 
                 // var marker= L.marker([lat,lon]).addTo(vzti);
-                var marker= L.circle([lat,lon],200000).addTo(vzti);
-                  marker.bindPopup("USER").openPopup();
+                // var marker= L.circle([lat,lon],200000).addTo(vzti);
+                // console.log(lat,lon)
+                  // marker.bindPopup("USER").openPopup();
                   $.post('/getlatlon', position)
+                      $.get('/latlong',function(data){
+      var i;
+        var marker4= L.circle([data[1],data[2]],data[3]*1000).addTo(vzti);
+        marker4.bindPopup("User").openPopup();
+                console.log(data[1],data[2],data[3])
+        data=data[0]
+
+      for(i=0;i<data.length;++i)
+      {
+       // console.log(data[i]);
+       var marker= L.marker([data[i].Lat,data[i].Long]).addTo(vzti);
+       marker.bindPopup(data[i].Name);
+   }
+  });
+
                   })
             }
-            console.log(lat,lon)
-            if(flag)
-            {
-        var marker= L.marker([lat,lon]).addTo(vzti);
-          marker.bindPopup("USER").openPopup();
-        }
             // $.get('/asd',function(data){
             //   console.log(data)
             // })
-    const marker2= L.marker([18.5294,73.8565]).addTo(vzti);
-    marker2.bindPopup("COEP").openPopup();
-    const marker3= L.marker([21.1232,79.0515]).addTo(vzti);
-    marker3.bindPopup("VNIT").openPopup();
-     $.get('/latlon',function(data){
-      var i;
-      //   for(i=1;i<3;++i)
-      //   // console.log(data[0]);
-      // {
-      // var marker= L.marker(data[i]).addTo(vzti);
-      // marker.bindPopup("VJTI").openPopup();
-      //  }
-  });
+    // const marker2= L.marker([18.5294,73.8565]).addTo(vzti);
+    // marker2.bindPopup("COEP").openPopup();
+    // const marker3= L.marker([21.1232,79.0515]).addTo(vzti);
+    // marker3.bindPopup("VNIT").openPopup();
+  //   $.get('/latlong',function(data){
+  //     var i;
+  //       var marker4= L.circle([data[1],data[2]],data[3]*1000).addTo(vzti);
+  //       marker4.bindPopup("User").openPopup();
+  //               console.log(data[1],data[2],data[3])
+  //       data=data[0]
+
+  //     for(i=0;i<data.length;++i)
+  //     {
+  //      // console.log(data[i]);
+  //      var marker= L.marker([data[i].Lat,data[i].Long]).addTo(vzti);
+  //      marker.bindPopup(data[i].Name);
+  //  }
+  // });
+
 }
 		// const marker = L.marker([19.0222,72.8561]).addTo(vzti);
 		</script>
