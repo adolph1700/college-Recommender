@@ -8,13 +8,76 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
+var path = require('path');
+var logger = require('morgan');
+// var bodyParser = require('body-parser');
+var neo4j = require('neo4j-driver');
 
+
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));
+
+
+
+var driver = neo4j.driver('bolt://localhost:7687', neo4j.auth.basic('neo4j', 'password'));
+var session = driver.session();
+
+app.get('/matchall', function(req, res){
+    session
+        .run('MATCH(n) RETURN n LIMIT 20')
+        .then(function(result){
+            result.records.forEach(function(record){
+                console.log(record._fields[0].properties);
+            });
+        })
+        .catch(function(err){
+            console.log(err);
+        });
+    res.send('Hello');
+});
+
+//Recommends College Exam Given
+app.get('/examgiven', function(req, res){
+    session
+        .run('MATCH(a:Course)-[:is_offered_by]->(b:College) WHERE a.Rankcl < $cutoffparam RETURN b.name,a.name,a.Rankcl',{cutoffparam:cutoff})
+        .then(function(result){
+            result.records.forEach(function(record){
+                console.log(record._fields);
+            });
+        })
+        .catch(function(err){
+            console.log(err);
+        });
+    res.send('Hello');
+});
+//Recommends College Exam Not Given
+app.get('/examnotgiven', function(req, res){
+    session
+        .run('MATCH(a:Course)-[:is_offered_by]->(b:College) WHERE b.name = $collegenameparam RETURN a.name',{collegenameparam:collegename})
+        .then(function(result){
+            result.records.forEach(function(record){
+                console.log(record._fields);
+            });
+        })
+        .catch(function(err){
+            console.log(err);
+        });
+    res.send('Hello');
+});
+
+
+var cutoff = 500
+var collegename = "Veermata Jijabai Technological Institute, Mumbai"
+module.exports = app;
 var collegeIDdoc;
 var fnamedoc;
 var lnamedoc;
 var password;
 var repassword;
-const { Client } =require('pg');
+// const { Client } =require('pg');
 const RegisterSchema = {
     _id: {
         type: String,
@@ -371,20 +434,23 @@ app.get('/profile', function (req, res) {
 app.get('/profile-mycomplaints-solved', function (req, res) {
     console.log(req.query.length)
     console.log(2)
-    console.log(req.query.college)
+    console.log(req.query)
     // console.log(isEmpty(a))
     a=req.query
     if(isEmpty(a))
    {
+    if(isEmpty(a.college))
+    {
             arr=[]
-    collegeModel.find({}).exec(function (err,docs){
+                collegeModel.find({}).exec(function (err,docs){
         if(err){console.log(err)}
         else{
             for(i=0;i<docs.length;++i)
                 {   
                     // console.log("Veermata Jijabai Technological Institute, Mumbai".slice(0,req.query.college.length)=="Veermata Jijabai Technological Institute")
                         if( docs[i].Name.indexOf(req.query.college)!==-1)
-                        {   console.log(docs[i])
+                        {  
+                         // console.log(docs[i])
                                       courseModel.find({college : docs[i].Name}, function (err, docs) {
                                 // console.log(collegeModel.find().limit(5))
                                 if (err) { console.log(err); }
@@ -399,6 +465,38 @@ app.get('/profile-mycomplaints-solved', function (req, res) {
                 }
             }
         });
+        }
+        else
+        {
+        collegeModel.find({}).exec(function (err,docs){
+        if(err){console.log(err)}
+        else{
+            var data=[]
+            for(i=0;i<docs.length;++i)
+                {   
+                    // console.log("Veermata Jijabai Technological Institute, Mumbai".slice(0,req.query.college.length)=="Veermata Jijabai Technological Institute")
+                        if( docs[i].City.indexOf(req.query.city)!==-1)
+                        { 
+                            // console.log(data)
+                                data.push(docs[i].Name)
+                        } 
+                }
+                 // console.log(data)
+                                      courseModel.find({college : {'$in' : data}}, function (err, docs) {
+                                // console.log(collegeModel.find().limit(5))
+                                if (err) { console.log(err); }
+                                else {
+                                    // console.log(docs,"sdkasdhkjshk");
+                                    res.render("profilemysolved", { name: fnamedoc + " " + lnamedoc, collegeID: collegeIDdoc, complaints: docs });
+
+                                }
+                            });
+
+
+            }
+        });
+    }
+
 
 
         }
