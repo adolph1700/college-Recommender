@@ -214,7 +214,7 @@ $('#apply').click(function()
               </a>
               <span>Profile</span>
           </li>
-          <li
+         <!--  <li
             class="nav-item"
             style="margin-left: 5px; margin-right: 5px;"
           >
@@ -237,7 +237,7 @@ $('#apply').click(function()
                 </center>
               </a>
               <span>Location</span>
-          </li>
+          </li> -->
          
           <li
             class="nav-item"
@@ -289,9 +289,9 @@ $('#apply').click(function()
           </div>
         </div>
       </form>-->
-
-      <center><div id="mapid"></div></center>
-      <center><button onclick="showlocation()">HIT ME</button></center><br>
+      <div class="main">
+      <center><div id="mapid" style="margin: 1% 3% 1% 3%; padding: 2%;"></div></center>
+      <center><button onclick="showlocation()">HIT ME</button></center><br></div>
       <script>
 		  /*the line below is what actualy places the map onto the site, however this map would be blank as we havent fed it any tiles. Tiles is where the entire map data is stored, if you no understand try commenting out from line 25 to end of script and refresh and then uncomment the code and refresh.You will get it ez PS:The 6 here defines zoom level*/
 		  const vzti = L.map('mapid').setView([19.7515, 75.7139], 6);
@@ -321,7 +321,8 @@ $('#apply').click(function()
                       $.get('/latlong',function(data){
       var i;
         var marker4= L.circle([data[1],data[2]],data[3]*1000).addTo(vzti);
-        marker4.bindPopup("User").openPopup();
+       var marker= L.marker([data[1],data[2]]).addTo(vzti);
+        marker.bindPopup("User").openPopup();
                 console.log(data[1],data[2],data[3])
         data=data[0]
 
